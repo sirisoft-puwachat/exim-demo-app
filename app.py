@@ -7,6 +7,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 COUNT_FILE = os.environ.get("COUNT_FILE", "./data/count.json")
 PORT = int(os.environ.get("PORT", "8080"))
+APP_VERSION = "v1.0"
 TIME_FMT = "%Y-%m-%d %H:%M:%S"
 
 
@@ -113,6 +114,13 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, PAGE, "text/html")
         elif self.path == "/api/count":
             self._json(update_state())
+        elif self.path == "/hello":
+            self._json({
+                "message": "Hello from exim-demo-app",
+                "version": APP_VERSION,
+                "status": "running",
+                **update_state(),
+            })
         elif self.path == "/healthz":
             self._send(200, "ok", "text/plain")
         else:

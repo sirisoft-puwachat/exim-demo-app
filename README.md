@@ -32,6 +32,13 @@ curl -XPOST $BASE/api/increment       # เพิ่มค่า
 curl -XPOST $BASE/api/reset           # รีเซ็ต
 ```
 
+นอกจากนี้มี `GET /hello` ไว้เช็คว่าแอปทำงานอยู่ — ตอบเป็น JSON รวมข้อมูลแอป (message, version, status) และสถานะตัวนับเหมือน `/api/count` (ไม่เปลี่ยนค่า):
+
+```bash
+curl $BASE/hello
+# {"message": "Hello from exim-demo-app", "version": "v1.0", "status": "running", "current_number": 2, "last_click_time": "2026-01-01 12:00:00"}
+```
+
 หมายเหตุ: `increment`/`reset` ต้องใช้ `POST` เท่านั้น ถ้าใช้ `GET` จะได้ 404
 
 ## Build / Tag / Push ไปยัง Docker Hub

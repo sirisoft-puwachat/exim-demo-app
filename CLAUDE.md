@@ -34,7 +34,7 @@ curl localhost:8080/api/count
 
 ทั้งแอปอยู่ใน `app.py` ไฟล์เดียว (HTML หน้าเว็บฝังเป็นสตริง `PAGE`):
 
-- Endpoint: `GET /` (หน้าเว็บ), `GET /api/count`, `POST /api/increment`, `POST /api/reset`, `GET /healthz` (สำหรับ probe)
+- Endpoint: `GET /` (หน้าเว็บ), `GET /api/count`, `POST /api/increment`, `POST /api/reset`, `GET /hello` (เช็คแอป/เวอร์ชัน + สถานะตัวนับ), `GET /healthz` (สำหรับ probe)
 - **ทุกการอ่าน/เขียนผ่านฟังก์ชัน `update_state()`** ซึ่งใช้ `flock` ล็อกไฟล์ เพื่อกัน race เมื่อมีหลาย request/หลาย pod ใช้ volume เดียวกัน
 - ไฟล์ถูกเขียนทับ **ตรงๆ** (open → truncate → write → fsync) ไม่ใช้ temp file + `rename` โดยตั้งใจ
   เพราะถ้า k8s mount ไฟล์แบบ `subPath` การ rename ทับไฟล์จะล้มเหลว — อย่าเปลี่ยนเป็น atomic rename
@@ -52,6 +52,7 @@ curl localhost:8080/api/count
 
 - ตอบเป็น JSON รูปแบบเดียวกับไฟล์ `count.json` (`current_number`, `last_click_time`)
 - ปุ่มบนหน้าเว็บเรียก endpoint ชุดเดียวกันนี้ — **อย่าแยก logic ของ UI ออกจาก API** และต้องคงให้ทั้ง 3 endpoint ผ่าน `update_state()` เสมอ
+- `GET /hello` — ตอบ JSON: `message`, `version`, `status` รวมกับฟิลด์ของ `/api/count` (`current_number`, `last_click_time`) ไว้เช็คว่าแอปทำงาน/เวอร์ชันอะไร อ่านอย่างเดียว ไม่แก้ไฟล์ เวอร์ชันคือค่าคงที่ `APP_VERSION` ใน `app.py` (ขึ้นเวอร์ชันใหม่ให้แก้ตรงนั้น)
 - `increment`/`reset` รับเฉพาะ `POST` (`GET` จะได้ 404)
 
 ### รูปแบบไฟล์ `count.json`
