@@ -77,4 +77,3 @@ curl -XPOST localhost:8080/api/reset
 |---|---|---|---|
 | `COUNT_FILE` | `./data/count.json` | `/data/count.json` | path ของไฟล์สถานะ (mount PVC ที่ `/data`) |
 | `PORT` | `8080` | `8080` | พอร์ตที่ฟัง |
-# exim-demp-app
