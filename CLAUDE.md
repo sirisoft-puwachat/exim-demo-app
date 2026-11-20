@@ -40,6 +40,20 @@ curl localhost:8080/api/count
   เพราะถ้า k8s mount ไฟล์แบบ `subPath` การ rename ทับไฟล์จะล้มเหลว — อย่าเปลี่ยนเป็น atomic rename
 - ถ้าไฟล์ไม่มี/ว่าง/เสีย จะ fallback เป็น `current_number: 0` และสร้างไฟล์ (รวมถึงโฟลเดอร์แม่) ให้เอง
 
+### API สำหรับทดสอบผ่าน curl
+
+มี 3 endpoint หลักที่ใช้ทดสอบจาก CLI ได้โดยไม่ต้องพึ่ง UI (เพราะบางครั้ง UI ต้องรอทำ LoadBalancer ก่อน):
+
+| Method | Path | หน้าที่ |
+|---|---|---|
+| `GET` | `/api/count` | อ่านค่าปัจจุบัน (ไม่แก้ไฟล์) |
+| `POST` | `/api/increment` | +1 และอัปเดต `last_click_time` |
+| `POST` | `/api/reset` | ตั้งเป็น 0 และอัปเดต `last_click_time` |
+
+- ตอบเป็น JSON รูปแบบเดียวกับไฟล์ `count.json` (`current_number`, `last_click_time`)
+- ปุ่มบนหน้าเว็บเรียก endpoint ชุดเดียวกันนี้ — **อย่าแยก logic ของ UI ออกจาก API** และต้องคงให้ทั้ง 3 endpoint ผ่าน `update_state()` เสมอ
+- `increment`/`reset` รับเฉพาะ `POST` (`GET` จะได้ 404)
+
 ### รูปแบบไฟล์ `count.json`
 
 ```json

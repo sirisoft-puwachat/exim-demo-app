@@ -10,6 +10,30 @@ python3 app.py
 COUNT_FILE=/tmp/count.json PORT=9000 python3 app.py
 ```
 
+## ทดสอบผ่าน curl (API)
+
+ใช้ทดสอบโดยไม่ต้องเปิด UI — เหมาะกับกรณีที่ยังไม่ได้ทำ LoadBalancer/Ingress ให้หน้าเว็บ
+(ใช้ `kubectl port-forward` หรือ `kubectl exec` ร่วมด้วยได้) มี 3 endpoint:
+
+| Method | Path | หน้าที่ |
+|---|---|---|
+| `GET` | `/api/count` | ดูค่าตัวนับปัจจุบัน (ไม่เปลี่ยนค่า) |
+| `POST` | `/api/increment` | เพิ่มค่า +1 (เหมือนกดปุ่ม "นับเลข +") |
+| `POST` | `/api/reset` | รีเซ็ตเป็น 0 (เหมือนกดปุ่ม "รีเซ็ต") |
+
+ทุก endpoint ตอบกลับเป็น JSON สถานะล่าสุด เช่น `{"current_number": 2, "last_click_time": "2026-01-01 12:00:00"}`
+(`last_click_time` เป็น `null` ถ้ายังไม่เคยคลิก)
+
+```bash
+BASE=http://localhost:8080   # เปลี่ยนเป็น IP/hostname ของ LoadBalancer หรือ Service ได้
+
+curl $BASE/api/count                  # ดูค่าปัจจุบัน
+curl -XPOST $BASE/api/increment       # เพิ่มค่า
+curl -XPOST $BASE/api/reset           # รีเซ็ต
+```
+
+หมายเหตุ: `increment`/`reset` ต้องใช้ `POST` เท่านั้น ถ้าใช้ `GET` จะได้ 404
+
 ## Build / Tag / Push ไปยัง Docker Hub
 
 Image ปลายทางคือ `puwachatsrs/exim-demo-app` — แทนที่ `v1.0` ด้วยเวอร์ชันที่ต้องการ
